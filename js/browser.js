@@ -10,7 +10,7 @@ import SafariView from 'react-native-safari-view';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 import { StyleSheet, Text, View, TouchableHighlight, Button, ActivityIndicator,
-  WebView, Clipboard, Modal, Image
+  WebView, Clipboard, Modal, Image, TouchableOpacity, AsyncStorage
 } from 'react-native';
 
 import theme from 'react-native-theme'
@@ -75,16 +75,13 @@ export class BrowserScreen extends React.Component {
 
 
   menu = () => (
-    <Menu style={{shadowOpacity:.05}}>
-      <TouchableHighlight
-        onPress={() => {
-          this.setState({popUpWindowShow: true});
-        }}
-        //styles={{color: 'black'}}
-      >
-        <Icon name="dots-three-vertical" size={22} style={{color: '#333333'}} />
-      </TouchableHighlight>
-    </Menu>
+    <TouchableOpacity
+      onPress={() => {
+        this.setState({popUpWindowShow: true});
+      }}
+    >
+      <Icon name="dots-three-vertical" size={22} style={{color: '#333333'}} />
+    </TouchableOpacity>
   );
 
   onNavigationStateChange = (navState) => {
@@ -101,7 +98,7 @@ export class BrowserScreen extends React.Component {
   renderWebView() {
     return (
       <WebView
-        ref={(b) => WEBVIEW_REF = b}
+        ref={WEBVIEW_REF}
         source={{ uri: this.state.urlToLoad, headers: {} }}
         renderLoading={() => {
           return (<View style={{ margin: 20, justifyContent: 'center', alignItems: 'center' }}>
@@ -126,7 +123,18 @@ export class BrowserScreen extends React.Component {
   i6 = () =>  <Image source={require(`./image/browser.png`)} style={{width: 36, height: 36}}/>
   i7 = () =>  <Image source={require(`./image/complaint.png`)} style={{width: 36, height: 32}}/>
 
-  renderChildrn = (props) => {//./image/wechat.pn
+  copyUrlLink = () =>  Clipboard.setString(this.state.url);
+  
+  reload = () => this.refs[WEBVIEW_REF].reload();
+
+  collectNews = () => {
+    const collectNews = AsyncStorage.getItem('collectNews');
+    AsyncStorage.setItem(collectNews, collectNews.push(this.state.url));
+  }
+
+  onPressButton = () => this.setState({popUpWindowShow: false});
+
+  renderChildrn = (props) => {
     return (
       <View
         style={{
@@ -134,13 +142,15 @@ export class BrowserScreen extends React.Component {
           justifyContent: 'flex-start'
         }}
       >
-        <View
-          style={{
-            width: 60, height: 60, backgroundColor: '#f7f7f7', borderWidth: 1, borderColor: '#f7f7f7', borderStyle: 'solid', borderRadius: 12, justifyContent: 'center', alignItems: 'center'
-          }}
-        >
-          {props.image()}
-        </View>
+        <TouchableOpacity onPress={() => props.pressEvent()}>
+          <View
+            style={{
+              width: 60, height: 60, backgroundColor: '#f7f7f7', borderWidth: 1, borderColor: '#f7f7f7', borderStyle: 'solid', borderRadius: 12, justifyContent: 'center', alignItems: 'center'
+            }}
+          >
+            {props.image()}
+          </View>
+        </TouchableOpacity>
         <View
           style={{
             marginTop: 4,
@@ -162,6 +172,7 @@ export class BrowserScreen extends React.Component {
 
   render() {
     const { goBack } = this.props.navigation;
+    const {popUpWindowShow = false} = this.state;
     return (
       <View style={{ width: '100%', height: '100%', backgroundColor: '#66cdaa' }}>
         {this.renderWebView()}
@@ -171,7 +182,7 @@ export class BrowserScreen extends React.Component {
             onRequestClose={() => {}}
             onShow={this.handleShow}
             transparent
-            visible={this.state.popUpWindowShow || false}
+            visible={popUpWindowShow || false}
           >
             <View
               style={{
@@ -203,8 +214,8 @@ export class BrowserScreen extends React.Component {
                   marginTop: 20,
                 }}
               >
-                {this.renderChildrn({image: this.i1, text: '微信好友'})}
-                {this.renderChildrn({image: this.i2, text: '朋友圈'})}
+                {this.renderChildrn({pressEvent:() => {}, image: this.i1, text: '微信好友'})}
+                {this.renderChildrn({pressEvent:() => {}, image: this.i2, text: '朋友圈'})}
                
               </View>
               <View
@@ -220,17 +231,19 @@ export class BrowserScreen extends React.Component {
                     paddingRight: 12
                   }}
                 >
-                  {this.renderChildrn({image: this.i3, text: '刷新'})}
-                  {this.renderChildrn({image: this.i4, text: '复制链接'})}
-                  {this.renderChildrn({image: this.i5, text: '收藏'})}
-                  {this.renderChildrn({image: this.i6, text: '在浏览器中打开'})}
-                  {this.renderChildrn({image: this.i7, text: '投诉'})}
+                  {this.renderChildrn({pressEvent: this.reload, image: this.i3, text: '刷新'})}
+                  {this.renderChildrn({pressEvent: this.copyUrlLink, image: this.i4, text: '复制链接'})}
+                  {this.renderChildrn({pressEvent: this.collectNews, image: this.i5, text: '收藏'})}
+                  {this.renderChildrn({pressEvent:() => {}, image: this.i6, text: '在浏览器中打开'})}
+                  {this.renderChildrn({pressEvent:() => {}, image: this.i7, text: '投诉'})}
                 </View>  
               </View>
               <View style={{backgroundColor: '#ffffff', width: '100%', height: 45, justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-                 <Text style={{fontSize: 18, color: '#101010'}}>
-                    取消
-                 </Text>  
+                <TouchableOpacity onPress={this.onPressButton}>
+                   <Text style={{fontSize: 18, color: '#101010'}}>
+                      取消
+                   </Text>
+                 </TouchableOpacity>
               </View>  
             </View>
           </Modal>
@@ -239,18 +252,6 @@ export class BrowserScreen extends React.Component {
     );
   }
 }
-
-//关于 popUpWindow的显示
-// 首先会有分享, 刷新， 在浏览器中打开
-// 是否 也要显示 网页 由什么提供
-//功能
-//1发送给朋友* 2分享到朋友圈* 3收藏# 4复制链接 5刷新 6投诉 7在浏览器中打开
-//先后顺序 微信 微博 知乎 ---> 微信好友 朋友圈 复制链接 收藏
-//图标
-//高度 背景色 字体的颜色
-//优化阅读 调整字体 也都是需要考虑的 但是这个不太具体指导改怎么处理先
-//收藏同样是有多个的到话题页面可能也是如此
-
 
 const styles = StyleSheet.create({
   button: {
