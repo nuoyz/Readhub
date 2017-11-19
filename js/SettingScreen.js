@@ -4,7 +4,6 @@ import { StyleSheet, Text, View, ScrollView, TextInput, TouchableHighlight,
 } from 'react-native';
 
 import { styles as themeStyles } from 'react-native-theme';
-import bus from './bus'
 
 export default class SettingScreen extends React.Component {
   constructor(props) {

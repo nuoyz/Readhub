@@ -1,24 +1,23 @@
 import React, { Component } from 'react';
 
 
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Icon2 from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Entypo';
 
 import axios from 'axios'
-import bus from './bus.js'
 
 import * as Progress from 'react-native-progress';
 import SafariView from 'react-native-safari-view';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 import { StyleSheet, Text, View, TouchableHighlight, Button, ActivityIndicator,
-  WebView, Clipboard
+  WebView, Clipboard, Modal, Image
 } from 'react-native';
 
 import theme from 'react-native-theme'
 
 const DEFAULT_URL = `https://www.moon.fm`;
 const WEBVIEW_REF = 'webview';
+const wechat = require('./image/wechat.png');
 
 export class BrowserScreen extends React.Component {
 
@@ -56,15 +55,18 @@ export class BrowserScreen extends React.Component {
         headerTintColor: 'black',
         headerStyle: { borderBottomColor: 'transparent', backgroundColor: '#66cdaa', elevation: 0, },
         headerMode: 'screen',
-        headerRight: (<View style={{
-          backgroundColor: 'transparent',
-          paddingRight: 20,
-          paddingLeft: 20,
-          height: '100%',
-          justifyContent: 'center'
-        }}>
-
-          <Icon2 name="ios-more" style={{color: '#3333'}} size={24} />
+        headerRight: (
+          <View
+            style={{
+              backgroundColor: 'transparent',
+              paddingRight: 20,
+              paddingLeft: 20,
+              height: '100%',
+              justifyContent: 'center'
+            }}
+          >
+    
+          <Icon name="dots-three-vertical" style={{color: '#3333'}} size={22} />
         </View>)
       })
     }
@@ -72,93 +74,18 @@ export class BrowserScreen extends React.Component {
   };
 
 
-  renderTouchable = () => (<TouchableHighlight style={{ backgroundColor: 'blue' }} />);
-
   menu = () => (
     <Menu style={{shadowOpacity:.05}}>
-      <MenuTrigger customStyles={{color: 'black'}} >
-        <Icon2 name="ios-more" size={32} />
-      </MenuTrigger>
-      <MenuOptions
-        customStyles={{
-          optionsContainer: {
-            backgroundColor: '#ffffff',
-            padding: 2,
-            shadowOpacity: 0.08,
-            borderWidth: 1,
-            borderColor: '#eaeaea',
-            marginTop: 10,
-            marginLeft: -10,
-            elevation: 0
-          },
-          optionWrapper: {
-            margin: 5,
-          },
-          optionTouchable: {
-            underlayColor: 'gold',
-            activeOpacity: 70,
-          },
-          optionText: {
-            color: 'brown',
-          },
+      <TouchableHighlight
+        onPress={() => {
+          this.setState({popUpWindowShow: true});
         }}
+        //styles={{color: 'black'}}
       >
-        <MenuOption
-          value={1}
-          customStyles={{
-            optionTouchable: {
-              activeOpacity: 40,
-            },
-            optionWrapper: {
-               margin: 5,
-            },
-            optionText: {
-              color: 'black',
-            }
-          }}
-          onSelect={() => this.reloadThePage()}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Icon2 name="ios-refresh" size={26} style={{ marginLeft: 10, marginRight: 10 }} />
-            <Text>Reload</Text>
-          </View>
-        </MenuOption>
-        <MenuOption
-          value={2}
-          customStyles={{
-            optionTouchable: {
-              activeOpacity: 40,
-            },
-            optionWrapper: {
-              margin: 5,
-            },
-            optionText: {
-              color: 'black',
-            }
-          }}
-          onSelect={() => this.copyURLToClipboard()}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Icon2 name="ios-copy-outline" size={24} style={{ marginLeft: 10, marginRight: 10 }} />
-            <Text>Copy URL</Text>
-          </View>
-        </MenuOption>
-      </MenuOptions>
+        <Icon name="dots-three-vertical" size={22} style={{color: '#333333'}} />
+      </TouchableHighlight>
     </Menu>
   );
-
-
-  copyURLToClipboard() {
-    Clipboard.setString(this.state.url);
-  }
-
-  reloadThePage() {
-    WEBVIEW_REF.reload();
-  }
-
-  onShouldStartLoadWithRequest = (event) => {
-    return true;
-  };
 
   onNavigationStateChange = (navState) => {
     this.setState({
@@ -172,60 +99,160 @@ export class BrowserScreen extends React.Component {
   };
 
   renderWebView() {
-    return (<WebView
-      ref={(b) => WEBVIEW_REF = b}
-      source={{ uri: this.state.urlToLoad, headers: {} }}
-      renderLoading={() => {
-        return (<View style={{ margin: 20, justifyContent: 'center', alignItems: 'center' }}>
-          <Progress.CircleSnail size={30} indeterminate={true} style={{ width: 30, height: 30, backgroundColor: '#00ff00' }} color={['#C0CCDA']} />
-        </View>)
-      }}
-      javaScriptEnabled={true}
-      domStorageEnabled={true}
-      decelerationRate="normal"
-      onNavigationStateChange={this.onNavigationStateChange}
-      startInLoadingState={true}
-      thirdPartyCookiesEnabled={true}
-      mixedContentMode={'always'}
-    />)
-
+    return (
+      <WebView
+        ref={(b) => WEBVIEW_REF = b}
+        source={{ uri: this.state.urlToLoad, headers: {} }}
+        renderLoading={() => {
+          return (<View style={{ margin: 20, justifyContent: 'center', alignItems: 'center' }}>
+            <Progress.CircleSnail size={30} indeterminate={true} style={{ width: 30, height: 30, backgroundColor: '#00ff00' }} color={['#C0CCDA']} />
+          </View>)
+        }}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        decelerationRate="normal"
+        onNavigationStateChange={this.onNavigationStateChange}
+        startInLoadingState={true}
+        thirdPartyCookiesEnabled={true}
+        mixedContentMode={'always'}
+     />
+    )
   }
+  i1 = () =>  <Image source={require(`./image/wechat.png`)} style={{width: 36, height: 30}}/>
+  i2 = () =>  <Image source={require(`./image/cof.png`)} style={{width: 36, height: 38}}/>
+  i3 = () =>  <Image source={require(`./image/reload.png`)} style={{width: 36, height: 34}}/>
+  i4 = () =>  <Image source={require(`./image/link.png`)} style={{width: 36, height: 34}}/>
+  i5 = () =>  <Image source={require(`./image/collection.png`)} style={{width: 36, height: 30}}/>
+  i6 = () =>  <Image source={require(`./image/browser.png`)} style={{width: 36, height: 36}}/>
+  i7 = () =>  <Image source={require(`./image/complaint.png`)} style={{width: 36, height: 32}}/>
 
+  renderChildrn = (props) => {//./image/wechat.pn
+    return (
+      <View
+        style={{
+          flexDirection: 'column',
+          justifyContent: 'flex-start'
+        }}
+      >
+        <View
+          style={{
+            width: 60, height: 60, backgroundColor: '#f7f7f7', borderWidth: 1, borderColor: '#f7f7f7', borderStyle: 'solid', borderRadius: 12, justifyContent: 'center', alignItems: 'center'
+          }}
+        >
+          {props.image()}
+        </View>
+        <View
+          style={{
+            marginTop: 4,
+            textAlign: 'center',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+            width: 60,
+            flexWrap: 'wrap'
+          }}
+        >
+          <Text style={{fontSize: 12, color: '#5e5e5e'}} ellipsizeMode="tail" numberOfLines={2}>
+            {props.text}
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   render() {
     const { goBack } = this.props.navigation;
     return (
       <View style={{ width: '100%', height: '100%', backgroundColor: '#66cdaa' }}>
-        <View
-          style={{
-            width: '100%', borderBottomColor: '#f0f0f0', borderBottomWidth: 1,
-            backgroundColor: '#66cdaa', flexDirection: 'row', alignItems: 'center',
-            paddingTop: 0, paddingBottom: 10
-          }}
-        >
-          <Text
-            ellipsizeMode="tail"
-            numberOfLines={1}
-            style={{ marginLeft: 50, marginRight: 15, color: '#ffffff', flex: 1, textAlign: 'center' }}
-          >
-            {this.state.url}
-          </Text>
-          <ActivityIndicator animating={this.state.loading} style={{ marginRight: 20 }} />
-        </View>
         {this.renderWebView()}
+        <View>
+          <Modal
+            animationType="slide"
+            onRequestClose={() => {}}
+            onShow={this.handleShow}
+            transparent
+            visible={this.state.popUpWindowShow || false}
+          >
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                }}
+            >
+              <View style={{flex: 1, backgroundColor: '#959495', opacity: .4}}></View>  
+              <View //modal inner
+                style={{
+                  alignSelf: 'flex-end',
+                  width: "100%",
+                  height: 280,
+                  backgroundColor: '#e4e4e4'
+                }}
+              >
+                <View style={{justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                  <Text style={{fontSize: 14, color: '#5e5e5e'}}>由readHub.me提供
+                  </Text>
+                </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  overflow: 'scroll',
+                  width: 140,
+                  paddingLeft: 12,
+                  marginTop: 20,
+                }}
+              >
+                {this.renderChildrn({image: this.i1, text: '微信好友'})}
+                {this.renderChildrn({image: this.i2, text: '朋友圈'})}
+               
+              </View>
+              <View
+                style={{
+                  borderColor: '#b4b4b4', borderBottomWidth: 1, marginTop: 30, marginBottom: 15, alignSelf: 'center', width: 336
+                }}
+              ></View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    paddingLeft: 12,
+                    paddingRight: 12
+                  }}
+                >
+                  {this.renderChildrn({image: this.i3, text: '刷新'})}
+                  {this.renderChildrn({image: this.i4, text: '复制链接'})}
+                  {this.renderChildrn({image: this.i5, text: '收藏'})}
+                  {this.renderChildrn({image: this.i6, text: '在浏览器中打开'})}
+                  {this.renderChildrn({image: this.i7, text: '投诉'})}
+                </View>  
+              </View>
+              <View style={{backgroundColor: '#ffffff', width: '100%', height: 45, justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+                 <Text style={{fontSize: 18, color: '#101010'}}>
+                    取消
+                 </Text>  
+              </View>  
+            </View>
+          </Modal>
+        </View>
       </View>
     );
   }
 }
 
+//关于 popUpWindow的显示
+// 首先会有分享, 刷新， 在浏览器中打开
+// 是否 也要显示 网页 由什么提供
+//功能
+//1发送给朋友* 2分享到朋友圈* 3收藏# 4复制链接 5刷新 6投诉 7在浏览器中打开
+//先后顺序 微信 微博 知乎 ---> 微信好友 朋友圈 复制链接 收藏
+//图标
+//高度 背景色 字体的颜色
+//优化阅读 调整字体 也都是需要考虑的 但是这个不太具体指导改怎么处理先
+//收藏同样是有多个的到话题页面可能也是如此
 
 
 const styles = StyleSheet.create({
-  icon: {
-    width: 26,
-    height: 26,
-    textAlign: 'center'
-  },
   button: {
     backgroundColor: '#20A0FF',
     paddingTop: 15,
@@ -248,8 +275,8 @@ export default {
         });
       })
       .catch(error => {
-        console.log('oooo');
-        bus.emit('ShowBrowser', { url: url, title: title });
+        console.log('oooo11111', error);
+        global.rdEvent.emit('ShowBrowser', { url: url, title: title });
       });
   }
 }

@@ -4,11 +4,12 @@ import { StyleSheet, Text, View, TouchableOpacity, StatusBar,} from 'react-nativ
 import { StackNavigator, TabNavigator, TabBarBottom, NavigationActions } from 'react-navigation';
 import Icon3 from 'react-native-vector-icons/Octicons';
 
-import axios from 'axios'
-import moment from 'moment'
+import axios from 'axios';
+import moment from 'moment';
 import 'moment/locale/zh-cn';
 
-import SettingScreen from './SettingScreen'
+import MyHomeScreen from './myHomeScreen';
+import SettingScreen from './SettingScreen';
 
 import topicItemHocComponent from './topicItemComponent';
 import cfg from './config';
@@ -19,6 +20,9 @@ import Themes from './themes'
 import { styles as themeStyles } from 'react-native-theme';
 import theme from 'react-native-theme'
 moment.locale('zh-cn');
+
+const EventEmitter=require('events');
+global.rdEvent = new EventEmitter();
 
 let iconClicked = false;
 export default class Root extends React.Component {
@@ -45,7 +49,7 @@ export default class Root extends React.Component {
 
 const MyApp = TabNavigator({
   Home: {
-    screen: topicItemHocComponent({tabBarLabel: '热门话题', topic_api: cfg.TOPIC_API}),
+    screen: MyHomeScreen,
   },
   TechArticles: {
     screen: topicItemHocComponent({tabBarLabel: '科技动态', topic_api: cfg.NEWS_API}),

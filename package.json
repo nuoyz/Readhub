@@ -7,6 +7,7 @@
 		"test": "jest"
 	},
 	"dependencies": {
+		"antd-mobile": "^2.0.2",
 		"axios": "^0.17.0",
 		"events": "^1.1.1",
 		"moment": "^2.19.1",
