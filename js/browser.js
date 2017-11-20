@@ -10,7 +10,8 @@ import SafariView from 'react-native-safari-view';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 import { StyleSheet, Text, View, TouchableHighlight, Button, ActivityIndicator,
-  WebView, Clipboard, Modal, Image, TouchableOpacity, AsyncStorage
+  WebView, Clipboard, Modal, Image, TouchableOpacity, AsyncStorage, ToastAndroid,
+  Linking
 } from 'react-native';
 
 import theme from 'react-native-theme'
@@ -123,13 +124,41 @@ export class BrowserScreen extends React.Component {
   i6 = () =>  <Image source={require(`./image/browser.png`)} style={{width: 36, height: 36}}/>
   i7 = () =>  <Image source={require(`./image/complaint.png`)} style={{width: 36, height: 32}}/>
 
-  copyUrlLink = () =>  Clipboard.setString(this.state.url);
+  toastAndroidShow = (string, durduration, gravity) => {
+    ToastAndroid.show(string, ToastAndroid[durduration], ToastAndroid[gravity])
+  }
+
+  copyUrlLink = () =>  {
+    const { url } = this.state;
+    Clipboard.setString(url);
+    this.toastAndroidShow(url, 'SHORT', 'CENTER');     
+  };
   
   reload = () => this.refs[WEBVIEW_REF].reload();
 
-  collectNews = () => {
-    const collectNews = AsyncStorage.getItem('collectNews');
-    AsyncStorage.setItem(collectNews, collectNews.push(this.state.url));
+  /*collectNews = () => { //收藏功能暂时取消
+    const collectNews = AsyncStorage.getItem('collectNews', (err, res) => {
+      if (err) {
+        this.toastAndroidShow('网页不能收藏, 请重试', 'SHORT', 'CENTER');
+      }
+      if (res) {
+        this.toastAndroidShow('收藏成功, 请重试', 'SHORT', 'CENTER');
+      }
+    });
+    console.log('collectNews', collectNews);
+    AsyncStorage.setItem(collectNews, collectNews.push(this.state.url), (err, result) => {
+      this.toastAndroidShow(result | err, 'SHORT', 'CENTER');
+    });
+  }*/
+
+  openInBrowser = (url) => {
+    Linking.canOpenURL(url).then(supported => {
+      if (!supported) {
+         this.toastAndroidShow('该链接不能被处理', 'SHORT', 'CENTER');
+      } else {
+        return Linking.openURL(url);
+      }
+    }).catch(err => this.toastAndroidShow(err, 'SHORT', 'CENTER'));
   }
 
   onPressButton = () => this.setState({popUpWindowShow: false});
@@ -172,7 +201,7 @@ export class BrowserScreen extends React.Component {
 
   render() {
     const { goBack } = this.props.navigation;
-    const {popUpWindowShow = false} = this.state;
+    const {popUpWindowShow = false, url} = this.state;
     return (
       <View style={{ width: '100%', height: '100%', backgroundColor: '#66cdaa' }}>
         {this.renderWebView()}
@@ -190,8 +219,17 @@ export class BrowserScreen extends React.Component {
                 flexDirection: 'column',
                 justifyContent: 'flex-end',
                 }}
-            >
-              <View style={{flex: 1, backgroundColor: '#959495', opacity: .4}}></View>  
+            > 
+                <View style={{flex: 1, backgroundColor: '#959495', opacity: .4}}>
+                  <TouchableOpacity style={{flex: 1, opacity: 1}} onPress={() => {
+                    this.setState({popUpWindowShow: false});
+                      console.log('onPress onPress');
+                    }}
+                  >
+                    <View style={{flex: 1}}></View>
+                  </TouchableOpacity> 
+                </View>
+               
               <View //modal inner
                 style={{
                   alignSelf: 'flex-end',
@@ -223,9 +261,10 @@ export class BrowserScreen extends React.Component {
                   borderColor: '#b4b4b4', borderBottomWidth: 1, marginTop: 30, marginBottom: 15, alignSelf: 'center', width: 336
                 }}
               ></View>
-                <View
+                <View //{this.renderChildrn({pressEvent: this.collectNews, image: this.i5, text: '收藏'})}
                   style={{
                     flexDirection: 'row',
+                    width: 290,
                     justifyContent: 'space-between',
                     paddingLeft: 12,
                     paddingRight: 12
@@ -233,8 +272,7 @@ export class BrowserScreen extends React.Component {
                 >
                   {this.renderChildrn({pressEvent: this.reload, image: this.i3, text: '刷新'})}
                   {this.renderChildrn({pressEvent: this.copyUrlLink, image: this.i4, text: '复制链接'})}
-                  {this.renderChildrn({pressEvent: this.collectNews, image: this.i5, text: '收藏'})}
-                  {this.renderChildrn({pressEvent:() => {}, image: this.i6, text: '在浏览器中打开'})}
+                  {this.renderChildrn({pressEvent: () => {this.openInBrowser(url)}, image: this.i6, text: '在浏览器中打开'})}
                   {this.renderChildrn({pressEvent:() => {}, image: this.i7, text: '投诉'})}
                 </View>  
               </View>
