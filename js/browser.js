@@ -220,7 +220,7 @@ export class BrowserScreen extends React.Component {
                 justifyContent: 'flex-end',
                 }}
             > 
-                <View style={{flex: 1, backgroundColor: '#959495', opacity: .4}}>
+                <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.54)', opacity: .4}}>
                   <TouchableOpacity style={{flex: 1, opacity: 1}} onPress={() => {
                     this.setState({popUpWindowShow: false});
                       console.log('onPress onPress');

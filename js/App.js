@@ -26,7 +26,9 @@ global.rdEvent = new EventEmitter();
 
 let iconClicked = false;
 export default class Root extends React.Component {
-  componentDidMount() {theme.setRoot(this)}
+  componentDidMount() {
+    theme.setRoot(this)
+  }
   render() {
     return (
       <MenuContext
@@ -101,9 +103,9 @@ const RootStack = StackNavigator({
           style={{marginTop: 22, marginRight: 21}}
           onPress={() => {
             if (iconClicked) return;
-            iconClicked = false;
+            iconClicked = true;
             navigation.navigate('Setting')
-            setTimeout(() => iconClicked = true, 2000);
+            setTimeout(() => iconClicked = false, 2000);
           }}
         >
           <View><Icon3 name="three-bars" size={24} style={{color: '#ffffff'}}></Icon3></View>
