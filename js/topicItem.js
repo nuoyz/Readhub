@@ -21,7 +21,6 @@ export default function topicItem (props) {
             <View style={{ height: 5 }}></View>
               <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Text ellipsizeMode="tail" numberOfLines={3} style={{color: '#808080', fontSize: 12, width: 80}}>{moment(props.publishDate).fromNow()}</Text>
-                <Icon name="thumbs-o-up" size={16} style={{color: '#808080', marginRight: 4}}></Icon>
               </View>
           </View>
         </View>

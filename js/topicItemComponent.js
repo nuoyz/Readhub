@@ -6,7 +6,6 @@ import { StyleSheet, Text, View, ScrollView, TextInput, Keyboard, ListView, Imag
 } from 'react-native';
 
 import axios from 'axios'
-import Browser from './browser';
 import moment from 'moment'
 
 import TopicItem from './topicItem';
@@ -21,7 +20,13 @@ export default function topicItemComponent(params) {
       this.state = { dataList: [], refreshing: false };
     }
     componentDidMount() {
-      this.getTopticItem()
+      this.getTopticItem();
+      const ShowBrowserListeners = global.rdEvent.listeners('ShowBrowser');
+      if (!ShowBrowserListeners[0]) {
+        global.rdEvent.on('ShowBrowser', (data) => {
+          this.props.navigation.navigate('Browser', data)
+        })
+      }
     }
     getTopticItem() {
       this.setState({ refreshing: true })
@@ -51,7 +56,6 @@ export default function topicItemComponent(params) {
        });
     }
     handlePress(item, index) {
-      console.log('index index', index);
       const {clickedItemIndex} = this.state;
       if ((clickedItemIndex || clickedItemIndex === 0) && clickedItemIndex === index) {
         return;
@@ -66,9 +70,9 @@ export default function topicItemComponent(params) {
       } else if (item.url) {
         url = item.url
       }
-      Browser.show(url, item.title, true);
+      global.rdEvent.emit('ShowBrowser', { url: url, title: item.title});
       this.setState({clickedItemIndex: index});
-      setTimeout(() => this.setState({clickedItemIndex: ''}), 2000);
+      setTimeout(() => this.setState({clickedItemIndex: ''}), 3000);
     }
 
     renderTopicItem = ({ item, index }) => {

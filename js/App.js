@@ -8,7 +8,6 @@ import axios from 'axios';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 
-import MyHomeScreen from './myHomeScreen';
 import SettingScreen from './SettingScreen';
 
 import topicItemHocComponent from './topicItemComponent';
@@ -51,7 +50,7 @@ export default class Root extends React.Component {
 
 const MyApp = TabNavigator({
   Home: {
-    screen: MyHomeScreen,
+    screen: topicItemHocComponent({tabBarLabel: '热门话题', topic_api: cfg.TOPIC_API}),
   },
   TechArticles: {
     screen: topicItemHocComponent({tabBarLabel: '科技动态', topic_api: cfg.NEWS_API}),

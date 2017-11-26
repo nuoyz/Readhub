@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
-
-
 import Icon from 'react-native-vector-icons/Entypo';
-
 import axios from 'axios'
 
 import * as Progress from 'react-native-progress';
-import SafariView from 'react-native-safari-view';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 import { StyleSheet, Text, View, TouchableHighlight, Button, ActivityIndicator,
@@ -302,22 +298,4 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
-
-export default {
-  show(url, title, readerMode) {
-   SafariView.isAvailable()
-      .then(available => {
-        SafariView.show({
-          url: url,
-          readerMode: true,
-          ...colors
-        });
-      })
-      .catch(error => {
-        console.log('oooo11111', error);
-        global.rdEvent.emit('ShowBrowser', { url: url, title: title });
-      });
-  }
-}
-
 
