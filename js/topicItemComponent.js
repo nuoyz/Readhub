@@ -14,19 +14,41 @@ let loadErrorCount=0;
 
 export default function topicItemComponent(params) {
   return class WrapperComponent extends React.Component {
-    static navigationOptions = {tabBarLabel: params.tabBarLabel};  
+    static navigationOptions = {tabBarLabel: params.tabBarLabel.label};  
     constructor(props) {
       super(props);
       this.state = { dataList: [], refreshing: false };
     }
+    componentWillMount() {
+      const readLaterList = global.readLaterList[params.tabBarLabel.name] || [];
+      this.setState({dataList: [ ...readLaterList, ...this.state.dataList]});
+    }
+    componentWillReceiveProps() {
+      console.log('11111111111111111');
+    }
     componentDidMount() {
       this.getTopticItem();
       const ShowBrowserListeners = global.rdEvent.listeners('ShowBrowser');
+      const AddReadLaterListeners = global.rdEvent.listeners('AddReadLater');
       if (!ShowBrowserListeners[0]) {
         global.rdEvent.on('ShowBrowser', (data) => {
-          this.props.navigation.navigate('Browser', data)
+          this.props.navigation.navigate('Browser', data);
         })
       }
+      if (!AddReadLaterListeners[0]) {
+        const _self = this;
+        global.rdEvent.on('AddReadLater', ({activeChannel, item}) => {
+          let activeChannelLsit = global.readLaterList[activeChannel];
+          if (!activeChannelLsit) {
+            global.readLaterList[activeChannel] = activeChannelLsit = [];
+            activeChannelLsit.push(item);
+          } else {
+            activeChannelLsit.push(item);
+          }
+          _self.forceUpdate();
+        })
+      }
+      
     }
     getTopticItem() {
       this.setState({ refreshing: true })
@@ -55,7 +77,7 @@ export default function topicItemComponent(params) {
          this.setState({ loading: false })
        });
     }
-    handlePress(item, index) {
+    handlePress(item, index, params) {
       const {clickedItemIndex} = this.state;
       if ((clickedItemIndex || clickedItemIndex === 0) && clickedItemIndex === index) {
         return;
@@ -70,7 +92,7 @@ export default function topicItemComponent(params) {
       } else if (item.url) {
         url = item.url
       }
-      global.rdEvent.emit('ShowBrowser', { url: url, title: item.title});
+      global.rdEvent.emit('ShowBrowser', { url: url, title: item.title, activeChannel: params.tabBarLabel.name, item});
       this.setState({clickedItemIndex: index});
       setTimeout(() => this.setState({clickedItemIndex: ''}), 3000);
     }
@@ -82,7 +104,7 @@ export default function topicItemComponent(params) {
           title={item.title}
           summary={item.summary}
           publishDate={item.publishDate}
-          handlePress={() => this.handlePress(item, index)}
+          handlePress={() => this.handlePress(item, index, params)}
         />
      )
     }
@@ -98,10 +120,11 @@ export default function topicItemComponent(params) {
   
     render() {
       const {dataList, refreshing, loading} = this.state;
+      const readLaterList = global.readLaterList[params.tabBarLabel.name] || [];
       return (
-        <View style={{ flex: 1 }}>
+        <View ref={params.tabBarLabel.name} style={{ flex: 1 }}>
           <FlatList
-            data={dataList}
+            data={[...readLaterList, ...dataList]}
             renderItem={this.renderTopicItem}
             keyExtractor={(item, index) => item.id}
             onEndReached={() => this.handleLoadMore()}

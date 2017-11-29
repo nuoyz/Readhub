@@ -33,8 +33,13 @@ export class BrowserScreen extends React.Component {
 
 
   componentDidMount() {
-    this.props.navigation.setParams({ ctx: this })
-    this.setState({ urlToLoad: this.props.navigation.state.params.url, pageTitle: this.props.navigation.state.params.title });
+    this.props.navigation.setParams({ ctx: this });
+    console.log('this.props.navigation.state', this.props.navigation.state);
+    const {params = {}} = this.props.navigation.state;
+    this.setState({
+      urlToLoad: params.url, pageTitle: params.title, activeChannel: params.activeChannel,
+      item: params.item
+    });
   }
 
   static navigationOptions = ({ navigation }) => {
@@ -62,7 +67,6 @@ export class BrowserScreen extends React.Component {
               justifyContent: 'center'
             }}
           >
-    
           <Icon name="dots-three-vertical" style={{color: '#3333'}} size={22} />
         </View>)
       })
@@ -82,6 +86,7 @@ export class BrowserScreen extends React.Component {
   );
 
   onNavigationStateChange = (navState) => {
+    console.log('nextState', navState);
     this.setState({
       backButtonEnabled: navState.canGoBack,
       forwardButtonEnabled: navState.canGoForward,
@@ -126,6 +131,8 @@ export class BrowserScreen extends React.Component {
 
   copyUrlLink = () =>  {
     const { url } = this.state;
+    console.log('urlurlurl');
+    console.log(url);
     Clipboard.setString(url);
     this.toastAndroidShow(url, 'SHORT', 'CENTER');     
   };
@@ -158,7 +165,13 @@ export class BrowserScreen extends React.Component {
   }
 
   onPressButton = () => this.setState({popUpWindowShow: false});
-
+  appreciateAction = () => {
+    
+  }
+  addReadLater = () => {
+    const { activeChannel = 'hotTopics', item } = this.state;
+    global.rdEvent.emit('AddReadLater', {activeChannel, item})
+  }
   renderChildrn = (props) => {
     return (
       <View
@@ -260,7 +273,7 @@ export class BrowserScreen extends React.Component {
                 <View //{this.renderChildrn({pressEvent: this.collectNews, image: this.i5, text: '收藏'})}
                   style={{
                     flexDirection: 'row',
-                    width: 290,
+                    width: 360,
                     justifyContent: 'space-between',
                     paddingLeft: 12,
                     paddingRight: 12
@@ -269,7 +282,8 @@ export class BrowserScreen extends React.Component {
                   {this.renderChildrn({pressEvent: this.reload, image: this.i3, text: '刷新'})}
                   {this.renderChildrn({pressEvent: this.copyUrlLink, image: this.i4, text: '复制链接'})}
                   {this.renderChildrn({pressEvent: () => {this.openInBrowser(url)}, image: this.i6, text: '在浏览器中打开'})}
-                  {this.renderChildrn({pressEvent:() => {}, image: this.i7, text: '投诉'})}
+                  {this.renderChildrn({pressEvent: this.appreciate, image: this.i5, text: '点赞'})}
+                  {this.renderChildrn({pressEvent: this.addReadLater, image: this.i6, text: '稍后观看'})}
                 </View>  
               </View>
               <View style={{backgroundColor: '#ffffff', width: '100%', height: 45, justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>

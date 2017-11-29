@@ -22,6 +22,7 @@ moment.locale('zh-cn');
 
 const EventEmitter=require('events');
 global.rdEvent = new EventEmitter();
+global.readLaterList = {};
 
 let iconClicked = false;
 export default class Root extends React.Component {
@@ -50,13 +51,13 @@ export default class Root extends React.Component {
 
 const MyApp = TabNavigator({
   Home: {
-    screen: topicItemHocComponent({tabBarLabel: '热门话题', topic_api: cfg.TOPIC_API}),
+    screen: topicItemHocComponent({tabBarLabel: {label: '热门话题', name: 'hotTopics'}, topic_api: cfg.TOPIC_API}),
   },
   TechArticles: {
-    screen: topicItemHocComponent({tabBarLabel: '科技动态', topic_api: cfg.NEWS_API}),
+    screen: topicItemHocComponent({tabBarLabel: {label: '科技动态', name: 'technologyNews'}, topic_api: cfg.NEWS_API}),
     },
   DevArticles: {
-    screen: topicItemHocComponent({tabBarLabel: '开发者资讯', topic_api: cfg.TECHNEWS_API}),
+    screen: topicItemHocComponent({tabBarLabel: {label: '开发者资讯', name: 'developerNews'}, topic_api: cfg.TECHNEWS_API}),
   },
 
 }, {

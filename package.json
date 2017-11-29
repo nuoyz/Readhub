@@ -10,6 +10,7 @@
 		"antd-mobile": "^2.0.2",
 		"axios": "^0.17.0",
 		"events": "^1.1.1",
+		"lottie-react-native": "^2.3.0",
 		"moment": "^2.19.1",
 		"react": "16.0.0-beta.5",
 		"react-native": "0.49.5",
