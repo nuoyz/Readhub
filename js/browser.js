@@ -9,7 +9,8 @@ import { StyleSheet, Text, View, TouchableHighlight, Button, ActivityIndicator,
   WebView, Clipboard, Modal, Image, TouchableOpacity, AsyncStorage, ToastAndroid,
   Linking
 } from 'react-native';
-
+import Animation from 'lottie-react-native';
+import Anim from '../assets/like.json';
 import theme from 'react-native-theme'
 
 const DEFAULT_URL = `https://www.moon.fm`;
@@ -122,7 +123,20 @@ export class BrowserScreen extends React.Component {
   i3 = () =>  <Image source={require(`./image/reload.png`)} style={{width: 36, height: 34}}/>
   i4 = () =>  <Image source={require(`./image/link.png`)} style={{width: 36, height: 34}}/>
   i5 = () =>  <Image source={require(`./image/collection.png`)} style={{width: 36, height: 30}}/>
-  i6 = () =>  <Image source={require(`./image/browser.png`)} style={{width: 36, height: 36}}/>
+  i6 = () =>  (<View>
+                 <Animation
+                   ref={animation => {
+                     this.animation = animation;
+                   }}
+                   style={{
+                     width: 80,
+                     height: 80
+                   }}
+                   loop={false}
+                   source="like.json"
+                 />
+                </View>
+              );
   i7 = () =>  <Image source={require(`./image/complaint.png`)} style={{width: 36, height: 32}}/>
 
   toastAndroidShow = (string, durduration, gravity) => {
@@ -166,7 +180,9 @@ export class BrowserScreen extends React.Component {
 
   onPressButton = () => this.setState({popUpWindowShow: false});
   appreciateAction = () => {
-    
+    //console.log('this.animation', this.animation);
+    this.animation.play();
+    setTimeout( () => this.animation.reset(), 800);
   }
   addReadLater = () => {
     const { activeChannel = 'hotTopics', item } = this.state;
@@ -229,15 +245,15 @@ export class BrowserScreen extends React.Component {
                 justifyContent: 'flex-end',
                 }}
             > 
-                <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.54)', opacity: .4}}>
-                  <TouchableOpacity style={{flex: 1, opacity: 1}} onPress={() => {
-                    this.setState({popUpWindowShow: false});
-                      console.log('onPress onPress');
-                    }}
-                  >
-                    <View style={{flex: 1}}></View>
-                  </TouchableOpacity> 
-                </View>
+              <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.54)', opacity: .4}}>
+                <TouchableOpacity style={{flex: 1, opacity: 1}} onPress={() => {
+                  this.setState({popUpWindowShow: false});
+                    console.log('onPress onPress');
+                  }}
+                >
+                  <View style={{flex: 1}}></View>
+                </TouchableOpacity> 
+              </View>
                
               <View //modal inner
                 style={{
@@ -281,9 +297,9 @@ export class BrowserScreen extends React.Component {
                 >
                   {this.renderChildrn({pressEvent: this.reload, image: this.i3, text: '刷新'})}
                   {this.renderChildrn({pressEvent: this.copyUrlLink, image: this.i4, text: '复制链接'})}
-                  {this.renderChildrn({pressEvent: () => {this.openInBrowser(url)}, image: this.i6, text: '在浏览器中打开'})}
-                  {this.renderChildrn({pressEvent: this.appreciate, image: this.i5, text: '点赞'})}
-                  {this.renderChildrn({pressEvent: this.addReadLater, image: this.i6, text: '稍后观看'})}
+                  {this.renderChildrn({pressEvent: () => {this.openInBrowser(url)}, image: this.i7, text: '在浏览器中打开'})}
+                  {this.renderChildrn({pressEvent: this.appreciateAction, image: this.i6, text: '点赞'})}
+                  {this.renderChildrn({pressEvent: this.addReadLater, image: this.i5, text: '稍后观看'})}
                 </View>  
               </View>
               <View style={{backgroundColor: '#ffffff', width: '100%', height: 45, justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
